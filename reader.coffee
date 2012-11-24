@@ -1,4 +1,6 @@
+console.log 'fuck'
 fs = require 'fs'
+_ = require 'underscore'
 buffer =new Buffer 100
 # fs.open 'kisstherain.gp4' ,'r',(err,fd)->
 #	console.log(err) if err
@@ -19,11 +21,10 @@ buffer =new Buffer 100
 
 			
 stream = fs.createReadStream('kisstherain.gp5');
-
+ 
 buffer_array = []
 stream.on 'data', (data)->
-	buffer_array.push data
-
+	buffer_array.push data 
 stream.on 'end', (data)->
 	file_b = Buffer.concat(buffer_array)
 	size1= file_b.readUInt8 0
