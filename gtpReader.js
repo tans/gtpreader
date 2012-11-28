@@ -2,8 +2,6 @@
 (function() {
   var GtpReader, bufferArray, fileStream, fs, readBufferInt, util;
 
-  console.log('run ');
-
   fs = require('fs');
 
   util = require('util');
@@ -21,11 +19,15 @@
     };
 
     GtpReader.prototype.readInterger = function() {
-      ((bytes[3] & 0xff) << 24) | ((bytes[2] & 0xff) << 16) | ((bytes[1] & 0xff) << 8) | (bytes[0] & 0xff);
-      return this.buffer.readInt8(this.buffer.position + 3) * 1000;
+      var ret;
+      ret = ((this.buffer[this.position + 3] & 0xff) << 24) | ((this.buffer[this.position + 2] & 0xff) << 16) | ((this.buffer[this.position + 1] & 0xff) << 8) | (this.buffer[this.position + 0] & 0xff);
+      this.buffer.readInt8(this.buffer.position + 3) * 1000;
+      return ret;
     };
 
-    GtpReader.prototype.readStringByteSizeOfInteger = function() {};
+    GtpReader.prototype.readStringByteSizeOfInteger = function() {
+      return console.log('i');
+    };
 
     return GtpReader;
 
@@ -85,6 +87,7 @@
     var gtpBuffer, gtpReader;
     gtpBuffer = Buffer.concat(bufferArray);
     gtpReader = new GtpReader(gtpBuffer);
+    console.log(gtpBuffer[31]);
     console.log(gtpReader.position);
     console.log(gtpReader.readVersion());
     return console.log(gtpReader.position);

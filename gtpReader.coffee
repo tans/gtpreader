@@ -1,5 +1,3 @@
-console.log 'run '
-
 fs = require 'fs'
 # _ = require 'underscore'
 util = require 'util'
@@ -13,11 +11,11 @@ class GtpReader
     @buffer.slice(1,@buffer.readInt8(0)).toString()
 
   readInterger:()->
-    ((bytes[3] & 0xff) << 24) | ((bytes[2] & 0xff) << 16) | ((bytes[1] & 0xff) << 8) | (bytes[0] & 0xff);
-    
+    ret = ((@buffer[@position+3] & 0xff) << 24) | ((@buffer[@position+2] & 0xff) << 16) | ((@buffer[@position+1] & 0xff) << 8) | (@buffer[@position+0] & 0xff);
     @buffer.readInt8(@buffer.position+3)*1000
+    return ret
   readStringByteSizeOfInteger:()->
-
+    console.log 'i'
 
 fileStream = fs.createReadStream('FadeToBlack.gp4');
 
@@ -56,8 +54,6 @@ readBufferInt = (buffer,type)->
   buffer.slice 0, type
 
 
-
-
 fileStream.on 'data',(data)->
   bufferArray.push data
 
@@ -65,6 +61,8 @@ fileStream.on 'end',()->
 
   gtpBuffer = Buffer.concat bufferArray
   gtpReader = new GtpReader(gtpBuffer);
+  console.log gtpBuffer[31]
+
   console.log gtpReader.position
   console.log gtpReader.readVersion()
   console.log gtpReader.position
