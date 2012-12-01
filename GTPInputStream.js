@@ -27,7 +27,12 @@
     };
 
     GTPInputStream.prototype.readVersion = function() {
-      return this.version = this.readStringByte(30);
+      var len;
+      len = this.readByte();
+      console.log(len);
+      this.version = this.readStringByte(len);
+      this.streamPosition = 30;
+      return this.version;
     };
 
     GTPInputStream.prototype.read = function(len) {
@@ -66,7 +71,7 @@
 
     GTPInputStream.prototype.readString = function(size, len) {
       if (Object.prototype.toString.call(len) !== '[object Number]') {
-        this.readString(size, size);
+        return this.readString(size, size);
       }
       return this.read(size > 0 ? size : len);
     };

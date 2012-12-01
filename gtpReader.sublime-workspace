@@ -4,6 +4,54 @@
 		"selected_items":
 		[
 			[
+				"te",
+				"tempoValue"
+			],
+			[
+				"ly",
+				"lyricTrack"
+			],
+			[
+				"TR",
+				"TRIPLET_FEEL_NONE"
+			],
+			[
+				"tr",
+				"TRIPLET_FEEL_NONE"
+			],
+			[
+				"read",
+				"read"
+			],
+			[
+				"str",
+				"streamPosition"
+			],
+			[
+				"c",
+				"console"
+			],
+			[
+				"p",
+				"position"
+			],
+			[
+				"gtp",
+				"gtpReader"
+			],
+			[
+				"gt",
+				"gtpReader"
+			],
+			[
+				"readIn",
+				"readUInt8"
+			],
+			[
+				"rea",
+				"readUnsignedByte"
+			],
+			[
 				"parent",
 				"parentAttribute"
 			],
@@ -264,10 +312,6 @@
 				"SYSTEM_DATE_TIME"
 			],
 			[
-				"tr",
-				"traveller-flight"
-			],
-			[
 				"add",
 				"addClass"
 			],
@@ -315,7 +359,66 @@
 			"file": "gtpReader.coffee",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 2268,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "GTPInputStream.coffee",
+			"settings":
+			{
+				"buffer_size": 1409,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "{GTPInputStream} = require './GTPInputStream'\nfs = require 'fs'\nutil = require 'util'\n\nclass TGMeasureHeader\n	@TRIPLET_FEEL_NONE = 1\n	@TRIPLET_FEEL_EIGHTH = 2\n	@TRIPLET_FEEL_SIXTEENTH = 3\n\n\nclass GP4InputStream extends GTPInputStream \n	song ={}\n	readSong:()->\n		song.version =  @readVersion()\n		if(not /FICHER GUITAR PRO v4*/.match(song.version))\n			return console.log 'not suport format'\n		song.Info = readInfo()\n\n		@tripletFeel = if readBoolean() then TGMeasureHeader.TRIPLET_FEEL_EIGHTH else TGMeasureHeader.TRIPLET_FEEL_NONE\n\n		lyricTrack = readInt()\n		lyric = readLyrics()\n\n		tempoValue = readInt()\n\n		readInt() #key\n\n		beadByte() #octave\n\n		channels = readChannels()\n\n		measures = readInt()\n		tracks = readInt()\n\n		song.measureHeaders = readMeasureHeaders measures\n		song.tracks = readTracks tracks,channels,lyric,lyricTrack\n		song.measures = readMeasure measures,tracks,tempoValue\n		return song\n	readLyrics:()->\n		console.log 'fuck lyric'\n\n		\n		# @readInfo()\ndebugger\nfileStream = fs.createReadStream('FadeToBlack.gp4');\nbufferArray=[]\nfileStream.on 'data',(data)->\n  	bufferArray.push data\nfileStream.on 'end',()->\n	gtpBuffer=Buffer.concat bufferArray\n	gtpReader=new GP4InputStream(gtpBuffer);\n	gtpReader.init()\n	gtpReader.readSong()\n\n	console.log SONG\n",
+			"file": "GTP4InputStream.coffee",
+			"file_size": 1311,
+			"file_write_time": 129988017963281250,
+			"settings":
+			{
+				"buffer_size": 1261,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "GTPInputStream.js",
+			"settings":
+			{
+				"buffer_size": 2685,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "GTP4InputStream.js",
+			"settings":
+			{
+				"buffer_size": 2487,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/E/startup/tuxguitar-src-1.2/TuxGuitar-gtp/src/org/herac/tuxguitar/io/gtp/GTPInputStream.java",
+			"settings":
+			{
+				"buffer_size": 4583,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/E/startup/tuxguitar-src-1.2/TuxGuitar-gtp/src/org/herac/tuxguitar/io/gtp/GP4InputStream.java",
+			"settings":
+			{
+				"buffer_size": 20612,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/E/Program Files/JetBrains/WebStorm 5.0/bin/WebStorm.exe.vmoptions",
+			"settings":
+			{
+				"buffer_size": 99,
 				"line_ending": "Windows"
 			}
 		}
@@ -328,7 +431,7 @@
 		[
 			[
 				"coffee",
-				"Coffee: Compile File"
+				"Set Syntax: CoffeeScript"
 			],
 			[
 				"install",
@@ -436,6 +539,8 @@
 	},
 	"file_history":
 	[
+		"/E/startup/gtpreader/gtpReader.js",
+		"/E/startup/gtpreader/gtpReader.coffee",
 		"/E/startup/tuxguitar-src-1.2/TuxGuitar-gtp/src/org/herac/tuxguitar/io/gtp/GTPInputStream.java",
 		"/C/Program Files/nodejs/coffee.cmd",
 		"/D/SublimeText/Data/Packages/User/CoffeeCompile.sublime-settings",
@@ -561,9 +666,7 @@
 		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/javascripts/module/sendservice/flightlist.js",
 		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/Views/LandService/index.cshtml",
 		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/stylesheets/iscroll_floating_headers.css",
-		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/Views/LandService/flightinfo.cshtml",
-		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/Views/LandService/flightdetail.cshtml",
-		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/javascripts/module/landservice/LandDetail.js"
+		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/Views/LandService/flightinfo.cshtml"
 	],
 	"find":
 	{
@@ -582,6 +685,12 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"TGMeasureHeader",
+			"readStringByte",
+			"require",
+			"constructor",
+			"	",
+			"createStream",
 			"ctrl+shift+k",
 			"readVersion",
 			"readBeat",
@@ -703,13 +812,7 @@
 			"ALL_JSON",
 			"json",
 			"paging",
-			"flightupdate",
-			"dataset",
-			"weather-search",
-			"Detail.",
-			"currentPosition",
-			"initscroll",
-			"animate"
+			"flightupdate"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -751,7 +854,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -759,7 +862,90 @@
 					"file": "gtpReader.coffee",
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 2268,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1545,
+								1545
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CoffeeScript/CoffeeScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 546.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "GTPInputStream.coffee",
+					"settings":
+					{
+						"buffer_size": 1409,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								376,
+								376
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CoffeeScript/CoffeeScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 42.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "GTP4InputStream.coffee",
+					"settings":
+					{
+						"buffer_size": 1261,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								948,
+								948
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CoffeeScript/CoffeeScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 169.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "GTPInputStream.js",
+					"settings":
+					{
+						"buffer_size": 2685,
 						"regions":
 						{
 						},
@@ -772,7 +958,123 @@
 						],
 						"settings":
 						{
-							"syntax": "Packages/CoffeeScript/CoffeeScript.tmLanguage"
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 210.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "GTP4InputStream.js",
+					"settings":
+					{
+						"buffer_size": 2487,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 5,
+					"file": "/E/startup/tuxguitar-src-1.2/TuxGuitar-gtp/src/org/herac/tuxguitar/io/gtp/GTPInputStream.java",
+					"settings":
+					{
+						"buffer_size": 4583,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								259,
+								269
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 5.0,
+						"translation.y": 378.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/E/startup/tuxguitar-src-1.2/TuxGuitar-gtp/src/org/herac/tuxguitar/io/gtp/GP4InputStream.java",
+					"settings":
+					{
+						"buffer_size": 20612,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2895,
+								2895
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1263.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/E/Program Files/JetBrains/WebStorm 5.0/bin/WebStorm.exe.vmoptions",
+					"settings":
+					{
+						"buffer_size": 99,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								99,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -800,11 +1102,18 @@
 				0,
 				1,
 				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
 			]
 		],
 		"cols":
 		[
 			0.0,
+			0.426975945017,
 			1.0
 		],
 		"rows":
@@ -816,7 +1125,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 191.0
+		"height": 94.0
 	},
 	"output.find_results":
 	{
@@ -832,6 +1141,10 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"gt4",
+				"GTP4InputStream.js"
+			],
 			[
 				"gtp",
 				"src/reader/gtpReader.js"
@@ -1339,10 +1652,6 @@
 			[
 				"plan.cs",
 				"LenovoCW.MPortal.Web/Views/SendService/flightplan.cshtml"
-			],
-			[
-				"lframe.js",
-				"LenovoCW.MPortal.Web/javascripts/LFrame.js"
 			]
 		],
 		"width": 0.0
@@ -1359,6 +1668,6 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 216.0,
+	"side_bar_width": 116.0,
 	"status_bar_visible": true
 }

@@ -16,7 +16,11 @@ class GTPInputStream
     return false #todo
 
   readVersion:()->
-    @version = @readStringByte(30)
+    len = @readByte()
+    console.log len
+    @version = @readStringByte(len)
+    @streamPosition = 30
+    return @version
 
   read:(len)->
     len = 1 if not len
@@ -44,7 +48,7 @@ class GTPInputStream
 
   readString:(size,len)->
     if Object.prototype.toString.call(len) isnt '[object Number]'
-      @readString(size,size)
+      return @readString(size,size)
     @read(if size>0 then size else len)
 
   readStringInteger:()->
