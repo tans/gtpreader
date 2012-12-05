@@ -25,11 +25,12 @@
   })();
 
   Song = (function() {
-    var measureHeaders;
 
     function Song() {}
 
-    Song(measureHeaders = [], Song.tracks = []);
+    Song.measureHeaders = [];
+
+    Song.tracks = [];
 
     return Song;
 
@@ -49,40 +50,84 @@
     GP4InputStream.prototype.readSong = function() {
       var channels, lyric, lyricTrack, measures, tempoValue, tracks;
       song.version = this.readVersion();
-      if (!/FICHER GUITAR PRO v4*/.match(song.version)) {
+      if (!/FICHIER GUITAR PRO v4.*/.test(song.version)) {
         return console.log('not suport format');
       }
-      song.Info = readInfo();
-      this.tripletFeel = readBoolean() ? TGMeasureHeader.TRIPLET_FEEL_EIGHTH : TGMeasureHeader.TRIPLET_FEEL_NONE;
-      lyricTrack = readInt();
-      lyric = readLyrics();
-      tempoValue = readInt();
-      readInt();
-      beadByte();
-      channels = readChannels();
-      measures = readInt();
-      tracks = readInt();
-      song.measureHeaders = readMeasureHeaders(measures);
-      song.tracks = readTracks(tracks, channels, lyric, lyricTrack);
-      song.measures = readMeasures(measures, tracks, tempoValue);
+      song.Info = this.readInfo();
+      this.tripletFeel = this.readBoolean() ? TGMeasureHeader.TRIPLET_FEEL_EIGHTH : TGMeasureHeader.TRIPLET_FEEL_NONE;
+      lyricTrack = this.readInt();
+      lyric = this.readLyrics();
+      tempoValue = this.readInt();
+      song.key = this.readInt();
+      song.octave = this.readByte();
+      channels = this.readChannels();
+      measures = this.readInt();
+      tracks = this.readInt();
+      song.measureHeaders = this.readMeasureHeaders(measures);
+      song.tracks = this.readTracks(tracks, channels, lyric, lyricTrack);
+      song.measures = this.readMeasures(measures, tracks, tempoValue);
       return song;
     };
 
     GP4InputStream.prototype.readInfo = function() {
-      return song.name = readStringByteSizeOfInteger();
+      var comments, _results;
+      song.name = this.readStringByteSizeOfInteger();
+      song.subtitle = this.readStringByteSizeOfInteger();
+      song.artist = this.readStringByteSizeOfInteger();
+      song.album = this.readStringByteSizeOfInteger();
+      song.author = this.readStringByteSizeOfInteger();
+      song.copyright = this.readStringByteSizeOfInteger();
+      song.writer = this.readStringByteSizeOfInteger();
+      song.afterWriter = this.readStringByteSizeOfInteger();
+      comments = this.readInt();
+      song.comments = [];
+      _results = [];
+      while (comments > 0) {
+        song.comments.push(this.readStringByteSizeOfInteger());
+        _results.push(comments--);
+      }
+      return _results;
     };
 
     GP4InputStream.prototype.readLyrics = function() {
       return console.log('fuck lyric');
     };
 
-    GP4InputStream.prototype.readMeasureHeaders = function() {};
+    GP4InputStream.prototype.readMeasureHeaders = function(count) {
+      var measureHeaders;
+      measureHeaders = [];
+      while (count > 0) {
+        measureHeaders.push(readMeasureHeader(count + 1));
+        count--;
+      }
+      return song.measureHeaders = measureHeaders;
+    };
 
-    GP4InputStream.prototype.readTracks = function() {};
+    GP4InputStream.prototype.readTracks = function(count) {
+      var _results;
+      song.tracks = [];
+      _results = [];
+      while (count > 0) {
+        _results.push(song.tracks.push(readTrack(number)));
+      }
+      return _results;
+    };
 
     GP4InputStream.prototype.readMeasures = function() {};
 
-    GP4InputStream.prototype.readLyrics = function() {};
+    GP4InputStream.prototype.readLyrics = function() {
+      var i, lyric;
+      lyric = {};
+      lyric.form = this.readInt();
+      lyric.lyrics = this.readStringInteger();
+      i = 4;
+      while (i > 0) {
+        this.readInt();
+        this.readStringInteger();
+        i--;
+      }
+      return song.lyric = lyric;
+    };
 
     GP4InputStream.prototype.readChannels = function() {};
 
@@ -98,7 +143,7 @@
 
     GP4InputStream.prototype.readMarker = function() {};
 
-    GP4InputStream.prototype.readMeasureHeaders = function() {};
+    GP4InputStream.prototype.readMeasureHeader = function() {};
 
     GP4InputStream.prototype.readMeasure = function() {};
 
@@ -136,9 +181,7 @@
 
   })(GTPInputStream);
 
-  debugger;
-
-  fileStream = fs.createReadStream('sample/FadeToBlack.gp4');
+  fileStream = fs.createReadStream('../sample/FadeToBlack.gp4');
 
   bufferArray = [];
 
@@ -151,8 +194,7 @@
     gtpBuffer = Buffer.concat(bufferArray);
     gtpReader = new GP4InputStream(gtpBuffer);
     gtpReader.init();
-    gtpReader.readSong();
-    return console.log(SONG);
+    return console.log(gtpReader.readSong());
   });
 
 }).call(this);

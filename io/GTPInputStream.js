@@ -11,7 +11,7 @@
     }
 
     GTPInputStream.prototype.init = function() {
-      return this.streamPosition = 0;
+      return this.position = 0;
     };
 
     GTPInputStream.prototype.getVersion = function() {
@@ -26,12 +26,12 @@
       return false;
     };
 
+    GTPInputStream.prototype.addPos = function(num) {
+      return this.position += parseInt(num);
+    };
+
     GTPInputStream.prototype.readVersion = function() {
-      var len;
-      len = this.readByte();
-      console.log(len);
-      this.version = this.readStringByte(len);
-      this.streamPosition = 30;
+      this.version = this.readStringByte(30);
       return this.version;
     };
 
@@ -40,13 +40,13 @@
       if (!len) {
         len = 1;
       }
-      ret = this.stream.slice(this.streamPosition, this.streamPosition + len).toString();
-      this.streamPosition += len;
+      ret = this.stream.slice(this.position, this.position + len).toString();
+      this.addPos(len);
       return ret;
     };
 
     GTPInputStream.prototype.skip = function(len) {
-      return this.streamPosition += len;
+      return this.addPos(len);
     };
 
     GTPInputStream.prototype.readUnsignedByte = function() {
@@ -54,8 +54,8 @@
     };
 
     GTPInputStream.prototype.readByte = function() {
-      this.streamPosition++;
-      return this.stream[this.streamPosition - 1];
+      this.position++;
+      return this.stream[this.position - 1];
     };
 
     GTPInputStream.prototype.readBoolean = function() {
@@ -64,14 +64,17 @@
 
     GTPInputStream.prototype.readInt = function() {
       var ret;
-      ret = this.stream[this.streamPosition + 3] << 24 | this.stream[this.streamPosition + 2] << 16 | this.stream[this.streamPosition + 1] << 8 | this.stream[this.streamPosition];
-      this.streamPosition += 3;
+      ret = this.stream[this.position + 3] << 24 | this.stream[this.position + 2] << 16 | this.stream[this.position + 1] << 8 | this.stream[this.position];
+      this.addPos(4);
       return ret;
     };
 
     GTPInputStream.prototype.readString = function(size, len) {
       if (Object.prototype.toString.call(len) !== '[object Number]') {
         return this.readString(size, size);
+      }
+      if (size === 0) {
+        return '';
       }
       return this.read(size > 0 ? size : len);
     };
@@ -81,7 +84,7 @@
     };
 
     GTPInputStream.prototype.readStringByte = function(size) {
-      return this.readString(size, this.readUnsignedByte);
+      return this.readString(size, this.readUnsignedByte());
     };
 
     GTPInputStream.prototype.readStringByteSizeOfByte = function() {
