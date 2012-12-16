@@ -119,13 +119,15 @@ class GP4InputStream extends GTPInputStream
 		flags = @readUnsignedByte()
 		if parseInt(flags & 0x40) isnt 0
 			@readUnsignedByte()
-		beat = {}
+		beat = getFactory().newBeat()
 		voice = beat.getVoice 0 #todo
-		duration = readDuration flags
-
+		duration = @readDuration flags
+		effect = getFactory().newEffect()
+		if (flags & 0x04) isnt 0
+			
 			
 	readText:()->
-
+		
 	readDuration:()->
 
 	getTiedNoteValue:()->

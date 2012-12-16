@@ -372,13 +372,18 @@
 	"buffers":
 	[
 		{
-			"contents": "{GTPInputStream} = require './GTPInputStream'\nfs = require 'fs'\nutil = require 'util'\n\nclass TGMeasureHeader\n	@TRIPLET_FEEL_NONE = 1\n	@TRIPLET_FEEL_EIGHTH = 2\n	@TRIPLET_FEEL_SIXTEENTH = 3\n\nclass Song\n	@measureHeaders = []\n	@tracks = []\nclass GP4InputStream extends GTPInputStream \n	song = new Song\n	readSong:()->\n		song.version = @readVersion()\n\n		if(not /FICHIER GUITAR PRO v4.*/.test(song.version))\n			return console.log 'not suport format'\n		song.Info = @readInfo()\n\n		@tripletFeel = if @readBoolean() then TGMeasureHeader.TRIPLET_FEEL_EIGHTH else TGMeasureHeader.TRIPLET_FEEL_NONE\n\n		lyricTrack = @readInt()\n		lyric = @readLyrics()\n\n		tempoValue = @readInt()\n\n		song.key = @readInt() #key\n\n		song.octave = @readByte() #octave\n\n		channels = @readChannels()\n\n		measures = @readInt()\n\n		tracks = @readInt()\n\n		song.measureHeaders = @readMeasureHeaders measures\n		song.tracks = @readTracks tracks,channels,lyric,lyricTrack\n		song.measures = @readMeasures measures,tracks,tempoValue\n		return song\n\n	readInfo:()->\n		song.name = @readStringByteSizeOfInteger()\n		song.subtitle = @readStringByteSizeOfInteger()\n		song.artist = @readStringByteSizeOfInteger()\n		song.album = @readStringByteSizeOfInteger()\n		song.author = @readStringByteSizeOfInteger()\n		song.copyright = @readStringByteSizeOfInteger()\n		song.writer = @readStringByteSizeOfInteger()\n		song.afterWriter = @readStringByteSizeOfInteger()\n\n		comments = @readInt()\n		song.comments = []\n		while comments>0\n			song.comments.push(@readStringByteSizeOfInteger())\n			comments--\n	readLyrics:()->\n		console.log 'fuck lyric'\n\n	readMeasureHeaders:(count)->\n		measureHeaders = []\n		while count>0\n			measureHeaders.push @readMeasureHeader(count+1)\n			count--\n		song.measureHeaders = measureHeaders\n	readTracks:(count)->\n		song.tracks = []\n		while count>0\n			song.tracks.push @readTrack(number+1)\n			count--\n\n	readMeasures:(measures,tracks,tempoValue)->\n		tempo = {}\n		tempo.value = tempoValue\n\n		track = []\n		while measures > 0 \n			i = tracks\n			while i>0\n				track[tracks - i] = [] unless track[tracks-1]\n				track[tracks - i].push @readMeasure(tempo)\n				i-- \n			measures--\n		song.track = track\n\n	readLyrics:()->\n		lyric = {}\n		lyric.form = @readInt()\n		lyric.lyrics = @readStringInteger()\n		i = 4\n		while i>0\n			@readInt()\n			@readStringInteger()\n			i--\n		song.lyric = lyric\n\n\n	readChannels:()->\n		channels = []\n		i=0\n		while i<64\n			channel = {}\n			channel.channel = i\n			channel.effectChannel =i\n			channel.instrument = @readInt()\n			channel.volume = @readByte()\n			channel.balance = @readByte()\n			channel.chorus = @readByte()\n			channel.reverb = @readByte()\n			channel.phaser = @readByte()\n			channel.tremolo = @readByte()\n			channels.push channel\n			i++\n		return channels\n\n	readBeat:(start,measure,track,tempo)->\n		flags = @readUnsignedByte()\n		if parseInt(flags & 0x40) isnt 0\n			@readUnsignedByte()\n		beat = {}\n		\n			\n	readText:()->\n\n	readDuration:()->\n\n	getTiedNoteValue:()->\n\n	readColor:()->\n\n	readMarker:()->\n\n	readMeasureHeader:()->\n\n	readMeasure:()->\n\n	readNote:()->\n\n	readTrack:()->\n\n	readChanel:()->\n\n	parseRepeatAlternative:()->\n\n	readChord:()->\n\n	readGrace:()->\n\n	readBend:()->\n\n	readTremoloBar:()->\n\n	readTremoloPicking:()->\n\n	readNoteEffects:()->\n\n	readBeatEffects:()->\n\n	readMixChange:()->\n\n	toStrokeValue:()->\n\n	toChanelShort:()->\n\n	getClef:()->\n\nfileStream = fs.createReadStream('../sample/FadeToBlack.gp4');\nbufferArray=[]\nfileStream.on 'data',(data)->\n  	bufferArray.push data\nfileStream.on 'end',()->\n	gtpBuffer=Buffer.concat bufferArray\n	gtpReader=new GP4InputStream(gtpBuffer);\n	gtpReader.init()\n	console.log gtpReader.readSong()\n\n",
 			"file": "io/GTP4InputStream.coffee",
-			"file_size": 3702,
-			"file_write_time": 129990155386875000,
 			"settings":
 			{
-				"buffer_size": 3604,
+				"buffer_size": 3755,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "io/GTPFileFormat.coffee",
+			"settings":
+			{
+				"buffer_size": 250,
 				"line_ending": "Windows"
 			}
 		},
@@ -391,10 +396,42 @@
 			}
 		},
 		{
+			"file": "model/SongFactory.coffee",
+			"settings":
+			{
+				"buffer_size": 1115,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/E/startup/alphaTab/src/alphatab/model/SongFactory.hx",
+			"settings":
+			{
+				"buffer_size": 3853,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/E/startup/alphaTab/src/alphatab/model/Song.hx",
+			"settings":
+			{
+				"buffer_size": 4323,
+				"line_ending": "Windows"
+			}
+		},
+		{
 			"file": "/E/startup/tuxguitar-src-1.2/TuxGuitar-gtp/src/org/herac/tuxguitar/io/gtp/GTPInputStream.java",
 			"settings":
 			{
 				"buffer_size": 4583,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/E/startup/tuxguitar-src-1.2/TuxGuitar-gtp/src/org/herac/tuxguitar/io/gtp/GTPFileFormat.java",
+			"settings":
+			{
+				"buffer_size": 582,
 				"line_ending": "Unix"
 			}
 		},
@@ -410,9 +447,13 @@
 	"build_system": "Packages/User/CoffeeScript.sublime-build",
 	"command_palette":
 	{
-		"height": 192.0,
+		"height": 172.0,
 		"selected_items":
 		[
+			[
+				"coff",
+				"Set Syntax: CoffeeScript"
+			],
 			[
 				"coffee",
 				"Set Syntax: CoffeeScript"
@@ -506,7 +547,7 @@
 				"Sort Lines"
 			]
 		],
-		"width": 528.0
+		"width": 443.0
 	},
 	"console":
 	{
@@ -523,6 +564,9 @@
 	},
 	"file_history":
 	[
+		"/E/startup/gtpreader/model/SongFactory",
+		"/D/SublimeText/Data/Packages/SideBarEnhancements/messages/11.13.2012.1305.0.txt",
+		"/E/startup/vexflow/coffee/fraction.js",
 		"/E/startup/gtpreader/GTP4InputStream.js",
 		"/E/startup/gtpreader/GTPInputStream.js",
 		"/E/startup/gtpreader/GTPInputStream.coffee",
@@ -647,10 +691,7 @@
 		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/javascripts/plugins/scrolllist.js",
 		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/javascripts/plugins/timepicker.js",
 		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/Views/FoodService/index.cshtml",
-		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/javascripts/module/foodservice/airlist.js",
-		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/template/landservice/mobilephoneFlightlist.html",
-		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/template/foodservice/mobilephoneFlightlist.html",
-		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/template/sendservice/mobilephoneFlightlist.html"
+		"/F/somifa/xiamenairportal/MPortal/LenovoCW.MPortal.Web/javascripts/module/foodservice/airlist.js"
 	],
 	"find":
 	{
@@ -669,6 +710,9 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"getFactory=",
+			"getFactory ",
+			"getFactory",
 			"readMeasureHeader",
 			"readStringInteger",
 			"beadByte",
@@ -793,10 +837,7 @@
 			"listview",
 			"mobilephoneflightlist",
 			"mobile",
-			"pageinit",
-			"list",
-			"listview",
-			"serviceUrl"
+			"pageinit"
 		],
 		"highlight": false,
 		"in_selection": false,
@@ -838,7 +879,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -846,15 +887,15 @@
 					"file": "io/GTP4InputStream.coffee",
 					"settings":
 					{
-						"buffer_size": 3604,
+						"buffer_size": 3755,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2867,
-								2867
+								3038,
+								3038
 							]
 						],
 						"settings":
@@ -863,13 +904,39 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1337.0,
+						"translation.y": 1344.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
+					"file": "io/GTPFileFormat.coffee",
+					"settings":
+					{
+						"buffer_size": 250,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11,
+								18
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CoffeeScript/CoffeeScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
 					"file": "io/GTPInputStream.coffee",
 					"settings":
 					{
@@ -891,7 +958,34 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 383.0,
+						"translation.y": 84.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "model/SongFactory.coffee",
+					"settings":
+					{
+						"buffer_size": 1115,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1079,
+								1079
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CoffeeScript/CoffeeScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 840.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -899,11 +993,69 @@
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
-					"buffer": 2,
+					"buffer": 4,
+					"file": "/E/startup/alphaTab/src/alphatab/model/SongFactory.hx",
+					"settings":
+					{
+						"buffer_size": 3853,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2913,
+								2964
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1974.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/E/startup/alphaTab/src/alphatab/model/Song.hx",
+					"settings":
+					{
+						"buffer_size": 4323,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"haxe-build-id": 0,
+							"syntax": "Packages/HaXe/HaXe.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
 					"file": "/E/startup/tuxguitar-src-1.2/TuxGuitar-gtp/src/org/herac/tuxguitar/io/gtp/GTPInputStream.java",
 					"settings":
 					{
@@ -914,8 +1066,8 @@
 						"selection":
 						[
 							[
-								344,
-								344
+								245,
+								258
 							]
 						],
 						"settings":
@@ -924,13 +1076,40 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 630.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 7,
+					"file": "/E/startup/tuxguitar-src-1.2/TuxGuitar-gtp/src/org/herac/tuxguitar/io/gtp/GTPFileFormat.java",
+					"settings":
+					{
+						"buffer_size": 582,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								64,
+								68
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
 					"file": "/E/startup/tuxguitar-src-1.2/TuxGuitar-gtp/src/org/herac/tuxguitar/io/gtp/GP4InputStream.java",
 					"settings":
 					{
@@ -941,8 +1120,8 @@
 						"selection":
 						[
 							[
-								5722,
-								5722
+								5739,
+								5761
 							]
 						],
 						"settings":
@@ -951,7 +1130,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2188.0,
+						"translation.y": 2142.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -987,7 +1166,7 @@
 		"cols":
 		[
 			0.0,
-			0.475727160311,
+			0.523875308459,
 			1.0
 		],
 		"rows":
